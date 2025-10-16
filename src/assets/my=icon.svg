@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="#0F2027"/>
+  
+  <!-- Book Icon -->
+  <rect x="140" y="160" width="90" height="60" rx="6" ry="6" fill="#00FFFF"/>
+  <line x1="185" y1="160" x2="185" y2="220" stroke="white" stroke-width="3"/>
+  
+  <!-- Game Controller Icon -->
+  <rect x="280" y="180" width="100" height="60" rx="15" ry="15" fill="#A020F0"/>
+  <circle cx="305" cy="210" r="8" fill="white"/>
+  <circle cx="335" cy="210" r="8" fill="white"/>
+  
+  <!-- Plant Icon -->
+  <path d="M260 320 C250 300, 270 280, 260 260 
+           C280 270, 300 290, 300 310 
+           C290 330, 270 340, 260 320 Z" 
+        fill="#7CFC00"/>
+  <circle cx="280" cy="350" r="10" fill="#00CED1"/>
+</svg>
