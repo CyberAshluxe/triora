@@ -43,16 +43,14 @@ const SignIn = () => {
     try {
       const endpoint =
         role === "admin"
-          ? "http://localhost:7145/admin/login"
+          ? "https://tri-aura-backend.onrender.com/admin/login"
           : role === "seller"
-          ? "http://localhost:7145/seller/login"
-          : "http://localhost:7145/user/login";
+          ? "https://tri-aura-backend.onrender.com/seller/login"
+          : "https://tri-aura-backend.onrender.com/user/login";
       const res = await axios.post(endpoint, {
         email,
         password,
       });
-
-      console.log("Response:", res.data);
 
       // ✅ If login is successful
       if (res.data.token) {
@@ -103,7 +101,6 @@ const SignIn = () => {
         setError(res.data.message || "Invalid credentials");
       }
     } catch (err) {
-      console.error("Error:", err.response ? err.response.data : err);
       setError(
         err.response?.data?.message ||
           "Login failed. Please check your email or password."

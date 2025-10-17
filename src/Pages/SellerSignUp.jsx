@@ -58,18 +58,19 @@ const SellerSignUp = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:7145/seller/register", {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        password: form.password,
-      });
+      const res = await axios.post(
+        "https://tri-aura-backend.onrender.com/seller/register",
+        {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          password: form.password,
+        }
+      );
 
-      console.log("Response:", res.data);
       setSuccess("Seller signup successful! Redirecting to login...");
       setTimeout(() => navigate("/seller-signin"), 2000);
     } catch (err) {
-      console.error("Error:", err.response?.data || err);
       setError(
         err.response?.data?.message || "Signup failed. Please try again."
       );
@@ -84,10 +85,9 @@ const SellerSignUp = () => {
     try {
       // ✅ Now jwtDecode is a function
       const userData = jwtDecodeModule.jwtDecode(response.credential);
-      console.log("Google user data:", userData);
 
       const backendRes = await axios.post(
-        "http://localhost:7145/seller/google-auth",
+        "https://tri-aura-backend.onrender.com/seller/google-auth",
         {
           token: response.credential,
         }
@@ -100,7 +100,6 @@ const SellerSignUp = () => {
         setTimeout(() => navigate("/seller-signin"), 2000);
       }
     } catch (err) {
-      console.error("Google auth error:", err.response?.data || err);
       setError(
         err.response?.data?.message || "Google signup failed. Please try again."
       );

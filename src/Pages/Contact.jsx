@@ -25,13 +25,16 @@ export default function Contact() {
     setSubmitStatus("");
 
     try {
-      const response = await fetch("http://localhost:7145/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://tri-aura-backend.onrender.com/api/contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         setSubmitStatus(
@@ -42,7 +45,6 @@ export default function Contact() {
         throw new Error("Failed to send message");
       }
     } catch (error) {
-      console.error("Error sending message:", error);
       setSubmitStatus("Failed to send message. Please try again later.");
     } finally {
       setIsSubmitting(false);
@@ -222,10 +224,10 @@ export default function Contact() {
                 {submitStatus && (
                   <div
                     className={`p-4 rounded-lg text-center ${
-                    submitStatus.includes("successfully") 
-                      ? "bg-emerald-100 text-emerald-700 border border-emerald-200" 
-                      : "bg-red-100 text-red-700 border border-red-200"
-                  }`}
+                      submitStatus.includes("successfully")
+                        ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                        : "bg-red-100 text-red-700 border border-red-200"
+                    }`}
                   >
                     {submitStatus}
                   </div>

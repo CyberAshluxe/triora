@@ -37,7 +37,7 @@ const Checkout = () => {
             setAccount(accounts[0]);
           }
         })
-        .catch((err) => console.log(err));
+        
     }
 
     // Check if Flutterwave is already loaded
@@ -51,7 +51,7 @@ const Checkout = () => {
         setIsFlutterwaveLoaded(true);
       };
       script.onerror = () => {
-        console.error("Failed to load Flutterwave script");
+        
       };
       document.head.appendChild(script);
     }
@@ -120,7 +120,7 @@ const Checkout = () => {
       });
       setAccount(accounts[0]);
     } catch (error) {
-      console.error("Error connecting to MetaMask:", error);
+      
       alert("Failed to connect to MetaMask. Please try again.");
     }
   };
@@ -149,7 +149,7 @@ const Checkout = () => {
       clearCart();
       navigate("/shipping");
     } catch (error) {
-      console.error("Payment failed:", error);
+      
       alert("Payment failed. Please try again.");
     }
   };
@@ -185,7 +185,7 @@ const Checkout = () => {
           logo: "https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg",
         },
         callback: function (response) {
-          console.log(response);
+          
           if (response.status === "successful") {
             clearCart();
             navigate("/shipping");
@@ -194,7 +194,7 @@ const Checkout = () => {
           }
         },
         onclose: function () {
-          console.log("Payment modal closed");
+          
         },
       };
 
@@ -223,7 +223,7 @@ const Checkout = () => {
         clearCart();
         navigate("/");
       } catch (error) {
-        console.error("Payment failed:", error);
+        
         alert("Payment failed. Please try again.");
       }
     }

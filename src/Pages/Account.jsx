@@ -52,13 +52,15 @@ const Account = () => {
 
   const fetchUserProfile = async (token) => {
     try {
-      const res = await axios.get("http://localhost:7145/user/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://tri-aura-backend.onrender.com/user/profile",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setUser(res.data.user);
       setFormData(res.data);
     } catch (err) {
-      console.error("Error fetching profile:", err);
       setError("Failed to load profile data");
     } finally {
       setLoading(false);
@@ -87,7 +89,7 @@ const Account = () => {
 
     try {
       const res = await axios.put(
-        "http://localhost:7145/user/profile",
+        "https://tri-aura-backend.onrender.com/user/profile",
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -97,7 +99,6 @@ const Account = () => {
       setSuccess("Profile updated successfully");
       setEditing(false);
     } catch (err) {
-      console.error("Error updating profile:", err);
       setError("Failed to update profile");
     }
   };

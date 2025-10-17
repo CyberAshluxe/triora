@@ -38,12 +38,13 @@ const SellerSignIn = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:7145/seller/login", {
-        email: email.trim(),
-        password: password.trim(),
-      });
-
-      console.log("Response:", res.data);
+      const res = await axios.post(
+        "https://tri-aura-backend.onrender.com/seller/login",
+        {
+          email: email.trim(),
+          password: password.trim(),
+        }
+      );
 
       // ✅ If login is successful
       if (res.data.token) {
@@ -68,7 +69,6 @@ const SellerSignIn = () => {
         setError(res.data.message || "Invalid credentials");
       }
     } catch (err) {
-      console.error("Error:", err.response ? err.response.data : err);
       setError(
         err.response?.data?.message ||
           "Login failed. Please check your email or password."

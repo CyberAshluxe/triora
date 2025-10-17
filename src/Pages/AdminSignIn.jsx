@@ -27,12 +27,13 @@ const AdminSignIn = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:7145/admin/login", {
-        email,
-        password,
-      });
-
-      console.log("Response:", res.data);
+      const res = await axios.post(
+        "https://tri-aura-backend.onrender.com/admin/login",
+        {
+          email,
+          password,
+        }
+      );
 
       // If login is successful
       if (res.data.token) {
@@ -57,7 +58,6 @@ const AdminSignIn = () => {
         setError(res.data.message || "Invalid credentials");
       }
     } catch (err) {
-      console.error("Error:", err.response ? err.response.data : err);
       setError(
         err.response?.data?.message ||
           "Login failed. Please check your email or password."

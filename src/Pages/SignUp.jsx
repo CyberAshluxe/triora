@@ -61,10 +61,10 @@ const SignUp = () => {
     try {
       const endpoint =
         role === "admin"
-          ? "http://localhost:7145/admin/register"
+          ? "https://tri-aura-backend.onrender.com/admin/register"
           : role === "seller"
-          ? "http://localhost:7145/seller/register"
-          : "http://localhost:7145/user/register";
+          ? "https://tri-aura-backend.onrender.com/seller/register"
+          : "https://tri-aura-backend.onrender.com/user/register";
       const res = await axios.post(endpoint, {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -72,11 +72,9 @@ const SignUp = () => {
         password: form.password,
       });
 
-      console.log("Response:", res.data);
       setSuccess("Signup successful! Redirecting to login...");
       setTimeout(() => navigate("/signin"), 2000);
     } catch (err) {
-      console.error("Error:", err.response?.data || err);
       setError(
         err.response?.data?.message || "Signup failed. Please try again."
       );
@@ -91,10 +89,9 @@ const SignUp = () => {
     try {
       // ✅ Now jwtDecode is a function
       const userData = jwtDecodeModule.jwtDecode(response.credential);
-      console.log("Google user data:", userData);
 
       const backendRes = await axios.post(
-        "http://localhost:7145/user/google-auth",
+        "https://tri-aura-backend.onrender.com/user/google-auth",
         {
           token: response.credential,
         }
@@ -107,7 +104,6 @@ const SignUp = () => {
         setTimeout(() => navigate("/signin"), 2000); // ✅ Fixed: "/signin" not "/signIn"
       }
     } catch (err) {
-      console.error("Google auth error:", err.response?.data || err);
       setError(
         err.response?.data?.message || "Google signup failed. Please try again."
       );

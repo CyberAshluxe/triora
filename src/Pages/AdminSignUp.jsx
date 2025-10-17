@@ -57,18 +57,19 @@ const AdminSignUp = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:7145/admin/register", {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        password: form.password,
-      });
+      const res = await axios.post(
+        "https://tri-aura-backend.onrender.com/admin/register",
+        {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          password: form.password,
+        }
+      );
 
-      console.log("Response:", res.data);
       setSuccess("Admin signup successful! Redirecting to login...");
       setTimeout(() => navigate("/admin-signin"), 2000);
     } catch (err) {
-      console.error("Error:", err.response?.data || err);
       setError(
         err.response?.data?.message || "Signup failed. Please try again."
       );

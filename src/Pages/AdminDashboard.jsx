@@ -86,7 +86,7 @@ export default function AdminDashboard() {
         { name: "Others", value: 5, color: "#5eead4" },
       ]);
     } catch (error) {
-      console.error("Error fetching data:", error);
+     
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
           alert("Failed to delete product");
         }
       } catch (error) {
-        console.error("Error deleting product:", error);
+        
         alert("Error deleting product");
       }
     }

@@ -28,16 +28,19 @@ export function ChatAI() {
     setInput("");
 
     try {
-      const response = await fetch("http://localhost:7145/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          history: messages.slice(-6),
-        }),
-      });
+      const response = await fetch(
+        "https://tri-aura-backend.onrender.com/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: userMessage,
+            history: messages.slice(-6),
+          }),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to get response");
 
@@ -46,7 +49,6 @@ export function ChatAI() {
       const aiMessage = { role: "assistant", content: data.response };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error("Error:", error);
       const errorMessage = {
         role: "assistant",
         content:

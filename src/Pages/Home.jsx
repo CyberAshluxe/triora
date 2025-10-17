@@ -29,7 +29,7 @@ const Home = () => {
   }, []);
 
   const token = localStorage.getItem("token");
-  const url = "http://localhost:7145/user/dashboard";
+  const url = "https://tri-aura-backend.onrender.com/user/dashboard";
 
   const getDashboard = async () => {
     if (!token) {
@@ -53,7 +53,6 @@ const Home = () => {
         setDashboardData(res.data);
       }
     } catch (err) {
-      console.error("Error:", err.response ? err.response.data : err);
       if (err.response?.status === 401) {
         localStorage.removeItem("token");
         navigate("/signin");
