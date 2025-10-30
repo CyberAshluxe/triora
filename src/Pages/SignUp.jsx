@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
-import * as jwtDecodeModule from "jwt-decode";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash, FaLock, FaUser, FaEnvelope } from "react-icons/fa";
+"use client"
+import React from "react"
+import { useState } from "react"
+import { GoogleLogin } from "@react-oauth/google"
+import * as jwtDecodeModule from "jwt-decode"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import { FaEye, FaEyeSlash, FaLock, FaUser, FaEnvelope, FaCheck } from "react-icons/fa"
+import icon from "../assets/my-icon.svg";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -12,146 +15,150 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmPassword: "",
-  });
-  const [role, setRole] = useState("user"); // Default to user
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  })
+  const [role, setRole] = useState("user")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value })
     if (error || success) {
-      setError("");
-      setSuccess("");
+      setError("")
+      setSuccess("")
     }
-  };
+  }
 
   const validateForm = () => {
     if (!form.firstName || !form.lastName || !form.email || !form.password) {
-      setError("All fields are required");
-      return false;
+      setError("All fields are required")
+      return false
     }
     if (form.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return false;
+      setError("Password must be at least 6 characters long")
+      return false
     }
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
-      return false;
+      setError("Passwords do not match")
+      return false
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(form.email)) {
-      setError("Please enter a valid email address");
-      return false;
+      setError("Please enter a valid email address")
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+    e.preventDefault()
+    setError("")
+    setSuccess("")
 
-    if (!validateForm()) return;
+    if (!validateForm()) return
 
-    setLoading(true);
+    setLoading(true)
     try {
       const endpoint =
         role === "admin"
           ? "https://tri-aura-backend.onrender.com/admin/register"
           : role === "seller"
-          ? "https://tri-aura-backend.onrender.com/seller/register"
-          : "https://tri-aura-backend.onrender.com/user/register";
+            ? "https://tri-aura-backend.onrender.com/seller/register"
+            : "https://tri-aura-backend.onrender.com/user/register"
       const res = await axios.post(endpoint, {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
         password: form.password,
-      });
+      })
 
-      setSuccess("Signup successful! Redirecting to login...");
-      setTimeout(() => navigate("/signin"), 2000);
+      setSuccess("Signup successful! Redirecting to login...")
+      setTimeout(() => navigate("/signin"), 2000)
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Signup failed. Please try again."
-      );
+      setError(err.response?.data?.message || "Signup failed. Please try again.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleGoogleSuccess = async (response) => {
-    setLoading(true);
-    setError("");
+    setLoading(true)
+    setError("")
     try {
-      // ✅ Now jwtDecode is a function
-      const userData = jwtDecodeModule.jwtDecode(response.credential);
+      const userData = jwtDecodeModule.jwtDecode(response.credential)
 
-      const backendRes = await axios.post(
-        "https://tri-aura-backend.onrender.com/user/google-auth",
-        {
-          token: response.credential,
-        }
-      );
+      const backendRes = await axios.post("https://tri-aura-backend.onrender.com/user/google-auth", {
+        token: response.credential,
+      })
 
       if (backendRes.data.token) {
-        localStorage.setItem("token", backendRes.data.token);
-        localStorage.setItem("user", JSON.stringify(backendRes.data.user));
-        setSuccess("Google signup successful! Redirecting...");
-        setTimeout(() => navigate("/signin"), 2000); // ✅ Fixed: "/signin" not "/signIn"
+        localStorage.setItem("token", backendRes.data.token)
+        localStorage.setItem("user", JSON.stringify(backendRes.data.user))
+        setSuccess("Google signup successful! Redirecting...")
+        setTimeout(() => navigate("/signin"), 2000)
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Google signup failed. Please try again."
-      );
+      setError(err.response?.data?.message || "Google signup failed. Please try again.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const handleGoogleError = () =>
-    setError("Google sign up failed. Please try again.");
+  const handleGoogleError = () => setError("Google sign up failed. Please try again.")
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-green-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Or{" "}
-            <a
-              href="/signin"
-              className="font-medium text-green-600 hover:text-green-800"
-            >
-              sign in
-            </a>
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+         <div className="flex justify-center items-center text-3xl font-bold">
+                     <img src={icon} alt="Triora Logo" width={50} height={50} />
+                     <span
+                       className="text-emerald-900 text-3xl"
+                       style={{ fontFamily: "'Orbitron', sans-serif" }}
+                     >
+                       Triora
+                     </span>
+                   </div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Account</h1>
+          <p className="text-slate-600 text-sm leading-relaxed">Join our community and start your journey today</p>
         </div>
 
+        {/* Alert Messages */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            {error}
-            <button
-              onClick={() => setError("")}
-              className="absolute top-0 right-0 px-2 py-1"
-            >
-              ×
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+            <div className="flex-shrink-0 mt-0.5">
+              <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800">{error}</p>
+            </div>
+            <button onClick={() => setError("")} className="text-red-600 hover:text-red-700 transition-colors">
+              ✕
             </button>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-            {success}
+          <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+            <div className="flex-shrink-0 mt-0.5">
+              <FaCheck className="w-5 h-5 text-emerald-600" />
+            </div>
+            <p className="text-sm font-medium text-emerald-800">{success}</p>
           </div>
         )}
 
-        <div className="text-center">
+        {/* Google Login */}
+        <div className="mb-6">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
@@ -163,172 +170,155 @@ const SignUp = () => {
           />
         </div>
 
-        <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="flex-shrink mx-4 text-gray-500 text-sm">
-            or continue with email
-          </span>
-          <div className="flex-grow border-t border-gray-300"></div>
+        {/* Divider */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-200"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="px-3 bg-white text-xs font-medium text-slate-500 uppercase tracking-wide">
+              Or continue with email
+            </span>
+          </div>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="relative">
-                <input
-                  name="firstName"
-                  type="text"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  placeholder="First Name"
-                  disabled={loading}
-                  className="appearance-none w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                  required
-                />
-                <FaUser className="absolute left-3 top-2.5 text-gray-400 text-sm" />
-              </div>
-
-              <div className="relative">
-                <input
-                  name="lastName"
-                  type="text"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  placeholder="Last Name"
-                  disabled={loading}
-                  className="appearance-none w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                  required
-                />
-                <FaUser className="absolute left-3 top-2.5 text-gray-400 text-sm" />
-              </div>
-            </div>
-
-            <div className="relative">
+        {/* Form */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Name Fields */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="relative group">
               <input
-                name="email"
-                type="email"
-                value={form.email}
+                name="firstName"
+                type="text"
+                value={form.firstName}
                 onChange={handleChange}
-                placeholder="Email address"
+                placeholder="First Name"
                 disabled={loading}
-                className="appearance-none w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                className="w-full px-4 py-3 pl-11 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 disabled:cursor-not-allowed"
                 required
               />
-              <FaEnvelope className="absolute left-3 top-2.5 text-gray-400 text-sm" />
+              <FaUser className="absolute left-3.5 top-3.5 text-slate-400 text-sm group-focus-within:text-emerald-500 transition-colors" />
             </div>
 
-            <div className="relative">
+            <div className="relative group">
               <input
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={form.password}
+                name="lastName"
+                type="text"
+                value={form.lastName}
                 onChange={handleChange}
-                placeholder="Password"
+                placeholder="Last Name"
                 disabled={loading}
-                className="appearance-none w-full px-3 py-2 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                className="w-full px-4 py-3 pl-11 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 disabled:cursor-not-allowed"
                 required
               />
-              <FaLock className="absolute left-3 top-2.5 text-gray-400 text-sm" />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-green-700"
-                disabled={loading}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-
-            <div className="relative">
-              <input
-                name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                value={form.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm Password"
-                disabled={loading}
-                className="appearance-none w-full px-3 py-2 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                required
-              />
-              <FaLock className="absolute left-3 top-2.5 text-gray-400 text-sm" />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-green-700"
-                disabled={loading}
-              >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-
-            {/* Role Selection */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-green-900 mb-2">
-                Sign up as:
-              </label>
-              <div className="flex space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    value="user"
-                    checked={role === "user"}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
-                    disabled={loading}
-                  />
-                  <span className="ml-2 text-sm text-green-900">User</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    value="seller"
-                    checked={role === "seller"}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
-                    disabled={loading}
-                  />
-                  <span className="ml-2 text-sm text-green-900">Seller</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    value="admin"
-                    checked={role === "admin"}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
-                    disabled={loading}
-                  />
-                  <span className="ml-2 text-sm text-green-900">Admin</span>
-                </label>
-              </div>
+              <FaUser className="absolute left-3.5 top-3.5 text-slate-400 text-sm group-focus-within:text-emerald-500 transition-colors" />
             </div>
           </div>
 
+          {/* Email */}
+          <div className="relative group">
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Email address"
+              disabled={loading}
+              className="w-full px-4 py-3 pl-11 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 disabled:cursor-not-allowed"
+              required
+            />
+            <FaEnvelope className="absolute left-3.5 top-3.5 text-slate-400 text-sm group-focus-within:text-emerald-500 transition-colors" />
+          </div>
+
+          {/* Password */}
+          <div className="relative group">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Password"
+              disabled={loading}
+              className="w-full px-4 py-3 pl-11 pr-11 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 disabled:cursor-not-allowed"
+              required
+            />
+            <FaLock className="absolute left-3.5 top-3.5 text-slate-400 text-sm group-focus-within:text-emerald-500 transition-colors" />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-3.5 text-slate-400 hover:text-emerald-600 transition-colors disabled:cursor-not-allowed"
+              disabled={loading}
+            >
+              {showPassword ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+            </button>
+          </div>
+
+          {/* Confirm Password */}
+          <div className="relative group">
+            <input
+              name="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              value={form.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm Password"
+              disabled={loading}
+              className="w-full px-4 py-3 pl-11 pr-11 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 disabled:cursor-not-allowed"
+              required
+            />
+            <FaLock className="absolute left-3.5 top-3.5 text-slate-400 text-sm group-focus-within:text-emerald-500 transition-colors" />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3.5 top-3.5 text-slate-400 hover:text-emerald-600 transition-colors disabled:cursor-not-allowed"
+              disabled={loading}
+            >
+              {showConfirmPassword ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+            </button>
+          </div>
+
+          {/* Role Selection */}
+          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-3">
+              Sign up as
+            </label>
+            <div className="flex gap-3">
+              {["user", "seller", "admin"].map((roleOption) => (
+                <label key={roleOption} className="flex items-center cursor-pointer group flex-1">
+                  <input
+                    type="radio"
+                    value={roleOption}
+                    checked={role === roleOption}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="w-4 h-4 text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer"
+                    disabled={loading}
+                  />
+                  <span className="ml-2 text-sm font-medium text-slate-700 capitalize group-hover:text-emerald-600 transition-colors">
+                    {roleOption}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+            className={`w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 ${
               loading
-                ? "bg-green-400 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-700"
+                ? "bg-emerald-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-95 shadow-lg hover:shadow-xl"
             }`}
           >
             {loading ? (
-              <div className="flex items-center">
+              <>
                 <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  className="animate-spin h-5 w-5"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path
                     className="opacity-75"
                     fill="currentColor"
@@ -336,27 +326,25 @@ const SignUp = () => {
                   ></path>
                 </svg>
                 Creating account...
-              </div>
+              </>
             ) : (
               "Create Account"
             )}
           </button>
         </form>
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
+        {/* Sign In Link */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-slate-600">
             Already have an account?{" "}
-            <a
-              href="/signin"
-              className="font-medium text-green-600 hover:text-green-800"
-            >
+            <a href="/signin" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
               Sign in
             </a>
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp

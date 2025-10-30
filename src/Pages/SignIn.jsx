@@ -1,43 +1,35 @@
-import React, { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
-import * as jwtDecodeModule from "jwt-decode";
-import logo from "../assets/my-icon.png"; // Assuming you have a logo image
-import icon from "../assets/my-icon.svg"; // Assuming you have a logo image
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import {
-  FaCrown,
-  FaLock,
-  FaGoogle,
-  FaFacebookF,
-  FaTwitter,
-  FaEye,
-  FaEyeSlash,
-} from "react-icons/fa";
-import WelcomeScreen from "../Components/WelcomeScreen";
+"use client"
+
+import React, { useState } from "react"
+import { GoogleLogin } from "@react-oauth/google"
+import * as jwtDecodeModule from "jwt-decode"
+import icon from "../assets/my-icon.svg"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import { FaLock, FaFacebookF, FaTwitter, FaEye, FaEyeSlash, FaExclamationCircle } from "react-icons/fa"
+import WelcomeScreen from "../Components/WelcomeScreen"
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user"); // Default to user
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const navigate = useNavigate();
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [role, setRole] = useState("user")
+  const [rememberMe, setRememberMe] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(false)
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+    e.preventDefault()
+    setError("")
+    setLoading(true)
 
-    // Basic validation
     if (!email || !password) {
-      setError("Please fill in all fields");
-      setLoading(false);
-      return;
+      setError("Please fill in all fields")
+      setLoading(false)
+      return
     }
 
     try {
@@ -45,142 +37,106 @@ const SignIn = () => {
         role === "admin"
           ? "https://tri-aura-backend.onrender.com/admin/login"
           : role === "seller"
-          ? "https://tri-aura-backend.onrender.com/seller/login"
-          : "https://tri-aura-backend.onrender.com/user/login";
+            ? "https://tri-aura-backend.onrender.com/seller/login"
+            : "https://tri-aura-backend.onrender.com/user/login"
       const res = await axios.post(endpoint, {
         email,
         password,
-      });
+      })
 
-      // ✅ If login is successful
       if (res.data.token) {
-        const tokenKey =
-          role === "admin"
-            ? "adminToken"
-            : role === "seller"
-            ? "sellerToken"
-            : "token";
-        const emailKey =
-          role === "admin"
-            ? "adminEmail"
-            : role === "seller"
-            ? "sellerEmail"
-            : "userEmail";
-        const rememberKey =
-          role === "admin"
-            ? "adminRememberMe"
-            : role === "seller"
-            ? "sellerRememberMe"
-            : "rememberMe";
+        const tokenKey = role === "admin" ? "adminToken" : role === "seller" ? "sellerToken" : "token"
+        const emailKey = role === "admin" ? "adminEmail" : role === "seller" ? "sellerEmail" : "userEmail"
+        const rememberKey = role === "admin" ? "adminRememberMe" : role === "seller" ? "sellerRememberMe" : "rememberMe"
 
-        localStorage.setItem(tokenKey, res.data.token);
+        localStorage.setItem(tokenKey, res.data.token)
 
-        // Store remember me preference
         if (rememberMe) {
-          localStorage.setItem(rememberKey, "true");
-          localStorage.setItem(emailKey, email);
+          localStorage.setItem(rememberKey, "true")
+          localStorage.setItem(emailKey, email)
         } else {
-          localStorage.removeItem(rememberKey);
-          localStorage.removeItem(emailKey);
+          localStorage.removeItem(rememberKey)
+          localStorage.removeItem(emailKey)
         }
 
-        // Show welcome screen immediately
-        setShowWelcome(true);
+        setShowWelcome(true)
 
-        // redirect after 3s based on role (welcome screen duration)
         setTimeout(() => {
           if (role === "admin") {
-            navigate("/admin-dashboard");
+            navigate("/admin-dashboard")
           } else if (role === "seller") {
-            navigate("/seller-dashboard");
+            navigate("/seller-dashboard")
           } else {
-            navigate("/");
+            navigate("/")
           }
-        }, 3000);
+        }, 3000)
       } else {
-        setError(res.data.message || "Invalid credentials");
+        setError(res.data.message || "Invalid credentials")
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Login failed. Please check your email or password."
-      );
+      setError(err.response?.data?.message || "Login failed. Please check your email or password.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  // Facebook Sign-In handler (placeholder)
   const handleFacebookSignIn = () => {
-    setError("Facebook sign-in not implemented yet");
-    // Implement Facebook OAuth here
-  };
+    setError("Facebook sign-in not implemented yet")
+  }
 
-  // Twitter Sign-In handler (placeholder)
   const handleTwitterSignIn = () => {
-    setError("Twitter sign-in not implemented yet");
-    // Implement Twitter OAuth here
-  };
+    setError("Twitter sign-in not implemented yet")
+  }
 
-  // Load remembered email on component mount based on role
   React.useEffect(() => {
-    const remembered = localStorage.getItem("rememberMe");
-    const rememberedEmail = localStorage.getItem("userEmail");
+    const remembered = localStorage.getItem("rememberMe")
+    const rememberedEmail = localStorage.getItem("userEmail")
 
     if (remembered === "true" && rememberedEmail) {
-      setRememberMe(true);
-      setEmail(rememberedEmail);
+      setRememberMe(true)
+      setEmail(rememberedEmail)
     }
-  }, [role]);
+  }, [role])
 
   return (
-    <div className="bg-emerald-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {showWelcome && <WelcomeScreen />}
-      <div className="max-w-md w-full space-y-8">
-        {/* Logo */}
-        <div className="text-center">
-          <div className="flex justify-center items-center text-3xl font-bold">
-            <img src={icon} alt="Triora Logo" width={50} height={50} />
+
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="flex justify-center items-center gap-3 mb-6">
+            <img src={icon || "/placeholder.svg"} alt="Triora Logo" width={48} height={48} className="drop-shadow-lg" />
             <span
-              className="text-emerald-900 text-3xl"
+              className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               Triora
             </span>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-emerald-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Or{" "}
-            <a
-              href="#"
-              className="font-medium text-emerald-600 hover:text-emerald-800"
-            >
-              start your 14-day free trial
-            </a>
-          </p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome back</h1>
+          <p className="text-slate-600 leading-relaxed">Sign in to your account to continue</p>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-            <span className="block sm:inline">{error}</span>
-            <button
-              onClick={() => setError("")}
-              className="absolute top-0 right-0 px-2 py-1"
-            >
-              ×
-            </button>
-          </div>
-        )}
+        <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 animate-in fade-in">
+              <FaExclamationCircle className="text-red-500 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-red-800 text-sm font-medium">{error}</p>
+              </div>
+              <button
+                onClick={() => setError("")}
+                className="text-red-400 hover:text-red-600 flex-shrink-0"
+                aria-label="Close error"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
-        {/* Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="sr-only">
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700">
                 Email address
               </label>
               <input
@@ -190,218 +146,187 @@ const SignIn = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                placeholder="Email address"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 text-emerald-900 rounded-t-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
+                placeholder="you@example.com"
                 disabled={loading}
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
-            {/* Password */}
-            <div className="relative">
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-                placeholder="Password"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 text-emerald-900 rounded-b-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-                disabled={loading}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-emerald-700"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                disabled={loading}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-semibold text-slate-700">
+                  Password
+                </label>
+                <a href="#" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
+                  Forgot?
+                </a>
+              </div>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  disabled={loading}
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors disabled:opacity-50"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Role Selection */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-emerald-900 mb-2">
-              Sign in as:
-            </label>
-            <div className="flex space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="user"
-                  checked={role === "user"}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                  disabled={loading}
-                />
-                <span className="ml-2 text-sm text-emerald-900">User</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="seller"
-                  checked={role === "seller"}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                  disabled={loading}
-                />
-                <span className="ml-2 text-sm text-emerald-900">Seller</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="admin"
-                  checked={role === "admin"}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                  disabled={loading}
-                />
-                <span className="ml-2 text-sm text-emerald-900">Admin</span>
-              </label>
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-slate-700">Sign in as</label>
+              <div className="grid grid-cols-3 gap-3">
+                {["user", "seller", "admin"].map((r) => (
+                  <label key={r} className="relative cursor-pointer">
+                    <input
+                      type="radio"
+                      value={r}
+                      checked={role === r}
+                      onChange={(e) => setRole(e.target.value)}
+                      disabled={loading}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`p-3 rounded-lg border-2 transition-all text-center font-medium text-sm capitalize ${
+                        role === r
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                          : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
+                      } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {r}
+                    </div>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Remember + Forgot */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
+            <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={() => setRememberMe(!rememberMe)}
-                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                 disabled={loading}
+                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer disabled:opacity-50"
               />
-              <span className="ml-2 text-sm text-emerald-900">Remember me</span>
+              <span className="text-sm text-slate-700 font-medium">Remember me</span>
             </label>
-            <a
-              href="#"
-              className="text-sm font-medium text-emerald-600 hover:text-emerald-800"
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold transition-all hover:shadow-lg hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Forgot your password?
-            </a>
-          </div>
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <FaLock size={18} />
+                  Sign in
+                </>
+              )}
+            </button>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 ${
-              loading
-                ? "bg-emerald-400 cursor-not-allowed"
-                : "bg-emerald-600 hover:bg-emerald-700"
-            }`}
-          >
-            {loading ? (
-              <div className="flex items-center">
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Signing in...
-              </div>
-            ) : (
-              <>
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <FaLock className="text-emerald-300" />
-                </span>
-                Sign in
-              </>
-            )}
-          </button>
+            <div className="flex items-center gap-4 my-6">
+              <div className="flex-1 h-px bg-slate-200"></div>
+              <span className="text-sm text-slate-500 font-medium">Or continue with</span>
+              <div className="flex-1 h-px bg-slate-200"></div>
+            </div>
 
-          {/* Divider */}
-          <div className="flex items-center my-6">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="flex-shrink mx-4 text-gray-500 text-sm">
-              Or sign in with
-            </span>
-            <div className="flex-grow border-t border-gray-300"></div>
-          </div>
-
-          {/* Social Buttons */}
-          <div className="flex justify-center space-x-4">
-            <div>
-              <button type="button">
+            <div className="space-y-3">
+              <div className="flex justify-center">
                 <GoogleLogin
                   onSuccess={(credentialResponse) => {
                     try {
-                      const userData = jwtDecodeModule.jwtDecode(
-                        credentialResponse.credential
-                      );
-                      localStorage.setItem(
-                        "googleUser",
-                        JSON.stringify(userData)
-                      );
-                      // Show welcome screen immediately
-                      setShowWelcome(true);
+                      const userData = jwtDecodeModule.jwtDecode(credentialResponse.credential)
+                      localStorage.setItem("googleUser", JSON.stringify(userData))
+                      setShowWelcome(true)
                       setTimeout(() => {
-                        navigate("/");
-                      }, 3000);
+                        navigate("/")
+                      }, 3000)
                     } catch (err) {
-                      setError("Google sign-in failed");
+                      setError("Google sign-in failed")
                     }
                   }}
                   onError={() => setError("Google sign-in failed")}
                 />
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={handleFacebookSignIn}
-              aria-label="Sign in with Facebook"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-green-800 text-white hover:bg-green-900 transition-colors"
-              disabled={loading}
-            >
-              <FaFacebookF />
-            </button>
-            <button
-              type="button"
-              onClick={handleTwitterSignIn}
-              aria-label="Sign in with Twitter"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-green-400 text-white hover:bg-green-500 transition-colors"
-              disabled={loading}
-            >
-              <FaTwitter />
-            </button>
-          </div>
-        </form>
+              </div>
 
-        {/* Sign up link */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{" "}
-            <a
-              href="/signup"
-              className="font-medium text-emerald-600 hover:text-emerald-800"
-            >
-              Sign up
-            </a>
-          </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={handleFacebookSignIn}
+                  disabled={loading}
+                  className="py-3 px-4 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-medium hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <FaFacebookF size={18} />
+                  <span className="hidden sm:inline">Facebook</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleTwitterSignIn}
+                  disabled={loading}
+                  className="py-3 px-4 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-medium hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <FaTwitter size={18} />
+                  <span className="hidden sm:inline">Twitter</span>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div className="text-center pt-4 border-t border-slate-200">
+            <p className="text-slate-600 text-sm">
+              Don't have an account?{" "}
+              <a href="/signup" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+                Sign up
+              </a>
+            </p>
+          </div>
         </div>
+
+        <p className="text-center text-slate-600 text-sm mt-6">
+          Or{" "}
+          <a href="#" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+            start your 14-day free trial
+          </a>
+        </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SignIn;
+export default SignIn
